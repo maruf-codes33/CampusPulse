@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-read --allow-write server.ts",
+    "dev": "deno run --watch --allow-net --allow-read --allow-write server.ts",
+    "check": "deno check server.ts db.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "dom"]
+  }
+}

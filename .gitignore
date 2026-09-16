@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Database (auto-created on first run — don't commit local dev data)
+campuspulse.sqlite
+campuspulse.sqlite-wal
+campuspulse.sqlite-shm
+*.db
+
+# Session secret (auto-generated on first run)
+.session_secret
+
+# Environment files — copy .env.example to .env locally, never commit
+.env
+.env.local
+.env.production
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node (in case any tooling is added)
+node_modules/
+
+# Misc
+*.bak
+*.tmp
