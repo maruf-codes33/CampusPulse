@@ -36,6 +36,7 @@ function progressDone() {
 }
 
 let currentUser = null;
+let allUsers = [];
 let activeFeedType = "for_me";
 let activeUrgency = "balanced";
 let activeCategory = "all";
@@ -81,6 +82,9 @@ async function init() {
   bindSigninForm();
   bindSignupForm();
   progressStart();
+  await loadDemoPersonas();
+  loadMastheadStat();
+
   const res = await fetch("/api/auth/me");
   const data = await res.json();
   progressDone();
@@ -88,6 +92,24 @@ async function init() {
     enterApp(data.user);
   } else {
     showAuthGate();
+  }
+}
+
+async function loadMastheadStat() {
+  const el = document.getElementById("stat-noise");
+  if (!el || !allUsers.length) return;
+  try {
+    const samples = await Promise.all(
+      allUsers.slice(0, 5).map(u =>
+        fetch(`/api/announcements?user_id=${u.id}&feed_type=for_me`).then(r => r.json())
+      )
+    );
+    const avg = Math.round(
+      samples.reduce((sum, s) => sum + (s.metrics?.noiseReductionPercent || 0), 0) / samples.length
+    );
+    el.textContent = `${avg}%`;
+  } catch {
+    el.textContent = "70%";
   }
 }
 
@@ -120,7 +142,7 @@ async function enterApp(user) {
 }
 
 // ---------------------------------------------------------------------------
-// Auth: tabs, sign in, sign up
+// Auth: tabs, demo personas, sign in, sign up
 // ---------------------------------------------------------------------------
 function bindAuthTabs() {
   document.querySelectorAll(".auth-tab").forEach(tab => {
@@ -155,6 +177,49 @@ function bindSignupTopicChips() {
   document.querySelectorAll("#signup-topics .topic-chip").forEach(chip => {
     chip.addEventListener("click", () => chip.classList.toggle("is-active"));
   });
+}
+
+async function loadDemoPersonas() {
+  const list = document.getElementById("demo-persona-list");
+  try {
+    const res = await fetch("/api/users");
+    allUsers = await res.json();
+    list.innerHTML = "";
+    allUsers.slice(0, 5).forEach(u => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "persona-card";
+      card.innerHTML = `
+        <img src="${escapeAttr(u.avatar)}" alt="">
+        <span>
+          <span class="p-name">${escapeHtml(u.name)}</span><br>
+          <span class="p-meta">${escapeHtml(roleLabel(u.role))} · ${escapeHtml(u.department)}${u.batch !== "ALL" ? " '" + escapeHtml(u.batch) : ""}</span>
+        </span>`;
+      card.addEventListener("click", () => demoLogin(u.id));
+      list.appendChild(card);
+    });
+  } catch (err) {
+    list.innerHTML = `<p class="field-error">Couldn't load demo personas. Refresh to try again.</p>`;
+  }
+}
+
+function roleLabel(role) {
+  return { student: "Student", cr: "Class Rep", faculty: "Faculty" }[role] || role;
+}
+
+async function demoLogin(userId) {
+  try {
+    const res = await fetch("/api/auth/demo-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: userId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not sign in");
+    await enterApp(data.user);
+  } catch (err) {
+    showToast(err.message, "error");
+  }
 }
 
 function bindSigninForm() {
@@ -274,6 +339,11 @@ function bindTopbar() {
       persistUrgencyPreference(activeUrgency);
       await loadFeed();
     });
+  });
+
+  document.getElementById("switch-persona-btn").addEventListener("click", async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    location.reload();
   });
 
   document.getElementById("logout-btn").addEventListener("click", async () => {
