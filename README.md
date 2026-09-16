@@ -4,7 +4,6 @@
 
 CampusPulse turns scattered campus announcements into a calmer, more relevant feed. It highlights notices by department, batch, section, hall, and club membership so people can find urgent information without scrolling through unrelated group messages.
 
-![CampusPulse dashboard](docs/screenshots/dashboard.png)
 
 ## Highlights
 
@@ -78,7 +77,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open [http://localhost:8000](http://localhost:8000). Create an account or sign in with an existing account to access the dashboard. On its first run, CampusPulse creates a local SQLite database and seeds sample notices for development.
+Open [https://campuspulse-2-ggr4.onrender.com/]. Create an account or sign in with an existing account to access the dashboard. On its first run, CampusPulse creates a local SQLite database and seeds sample notices for development.
 
 On Windows, `Start-CampusPulse.bat` is also available as a convenient launcher.
 
