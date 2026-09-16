@@ -78,7 +78,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open [http://localhost:8000](http://localhost:8000). On its first run, CampusPulse creates a local SQLite database and seeds demo personas and notices.
+Open [http://localhost:8000](http://localhost:8000). Create an account or sign in with an existing account to access the dashboard. On its first run, CampusPulse creates a local SQLite database and seeds sample notices for development.
 
 On Windows, `Start-CampusPulse.bat` is also available as a convenient launcher.
 
